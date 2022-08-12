@@ -1,42 +1,10 @@
-# com.zwitserloot.cmdreader
+# cmdreader
 
 ## How to use
 
 First, create a class to represent your command line options. Create one field for each command line option you want, then use the annotations of the `com.zwitserloot.cmdreader` package on the field to configure that option. Then, create a `CmdReader` instance and use it to parse a command line into an instance of your class. You can also use a `CmdReader` instance to generate comprehensive command line help.
 
-For the full manual, you should visit the javadoc, which you can build yourself with `ant javadoc`, after which it'll be available in `doc/api/index.html`. For a quick intro, check out the example program at the end of this documentation.
-
-### Example program
-
-	import com.zwitserloot.cmdreader.*;
-	
-	public class Test {
-		static class CmdArgs {
-			@Shorthand("x")
-			@Description("Excludes the given file.")
-			java.util.List<String> exclude;
-			
-			@Sequential
-			@Mandatory
-			@Description("The directory to turn into a compressed archive.")
-			String compress;
-		}
-		
-		public static void main(String[] rawArgs) {
-			CmdReader<CmdArgs> reader = CmdReader.of(CmdArgs.class);
-			CmdArgs args;
-			try {
-				args = reader.make(rawArgs);
-			} catch (InvalidCommandLineException e) {
-				System.err.println(e.getMessage());
-				System.err.println(reader.generateCommandLineHelp("java Test"));
-				return;
-			}
-			
-			System.err.println("If this was a real program, I would now compress " + args.compress);
-			System.err.println("And I'd be excluding: " + args.exclude);
-		}
-	}
+For the full manual, you should visit the javadoc, available in releases or from building this project. For a quick intro, check out the example program at the end of this documentation.
 
 ### All annotation options
 
@@ -95,11 +63,43 @@ Multiple sequential arguments are allowed; exactly one such argument may be a co
 #### @Requires
 Used to indicate that if this option is present, the listed option must also be present. Like `@Mandatory` but this one is put on the other option.
 
+### Example program
+
+	import com.zwitserloot.cmdreader.*;
+	
+	public class Test {
+		static class CmdArgs {
+			@Shorthand("x")
+			@Description("Excludes the given file.")
+			java.util.List<String> exclude;
+			
+			@Sequential
+			@Mandatory
+			@Description("The directory to turn into a compressed archive.")
+			String compress;
+		}
+		
+		public static void main(String[] rawArgs) {
+			CmdReader<CmdArgs> reader = CmdReader.of(CmdArgs.class);
+			CmdArgs args;
+			try {
+				args = reader.make(rawArgs);
+			} catch (InvalidCommandLineException e) {
+				System.err.println(e.getMessage());
+				System.err.println(reader.generateCommandLineHelp("java Test"));
+				return;
+			}
+			
+			System.err.println("If this was a real program, I would now compress " + args.compress);
+			System.err.println("And I'd be excluding: " + args.exclude);
+		}
+	}
+
 ## How to compile / develop
 
 run:
 
-	ant
+	maven verify
 
-and that's that. All dependencies will be downloaded automatically. The jar file you need will be in the `dist` directory. If you want to work on the code, run 'ant eclipse' or 'ant intellij' to set up the project dir as an eclipse or intellij project.
+and that's that. All dependencies will be downloaded automatically. The jar file you need will be in the `target` directory.
 
